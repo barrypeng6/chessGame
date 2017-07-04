@@ -1,10 +1,12 @@
 // 井字遊戲 ai 單使用函數評估函數
 
-let isCircle = true;
+let isCircle = true; // 人類：true, 電腦：false，人類先：初始為true
 let board = [];
 let wins = []; // 贏法數組
 let circleWinPoints = []; // 贏法統計數組
 let crossWinPoints = []; // 贏法統計數組
+let simCircleWinPoints = []; // 贏法統計模擬數組
+let simCrossWinPoints = []; // 贏法統計模擬數組
 let over = false;
 
 for(let i=0;i<3;i++) {
@@ -50,6 +52,12 @@ console.log('總贏法數', count);
 for(let k=0;k<count;k++) {
   circleWinPoints[k] = 0;
   crossWinPoints[k] = 0;
+}
+
+// 初始贏法統計模擬數組
+for(let k=0;k<count;k++) {
+  simCircleWinPoints[k] = 0;
+  simCrossWinPoints[k] = 0;
 }
 
 
@@ -104,73 +112,65 @@ ttt.onclick = function(e) {
       isCircle = !isCircle;
     }
   }
-  console.table(board);
+  // console.table(board);
 }
 
-
+// 最大最小搜尋演算法
 const computerAI = function() {
-  let computerScore=[];
-  let userScore=[];
-  let max=0;
-  let u, v;
-  // 初始
+
+  let simulateBoard = board;
+
+  let depth = 0;
   for(let i=0;i<3;i++) {
-    computerScore[i]=[];
-    userScore[i]=[];
     for(let j=0;j<3;j++) {
-      computerScore[i][j]=0;
-      userScore[i][j]=0;
-    }
-  }
-
-  for(let i=0;i<3;i++){
-    for(let j=0;j<3;j++) {
-      if(board[i][j]===0) {
-        for(let k=0;k<count;k++) {
-          if(wins[i][j][k]) {
-            // 防守
-            if(circleWinPoints[k]===1) {
-              userScore[i][j] += 200;
-            } else if(circleWinPoints[k]===2) {
-              userScore[i][j] += 1000;
-            }
-            // 進攻
-            if(crossWinPoints[k]===1) {
-              computerScore[i][j] += 220;
-            } else if(crossWinPoints[k]===2) {
-              computerScore[i][j] += 5000;
-            }
-          }
-        }
-
-        if(userScore[i][j]>max) {
-          max = userScore[i][j];
-          u = i;
-          v = j;
-        } else if (userScore===max) {
-          if(computerScore[i][j]>max) {
-            max = computerScore[i][j]
-            u = i;
-            v = j;
-          }
-        }
-        if(computerScore[i][j]>max) {
-          max = computerScore[i][j];
-          u = i;
-          v = j;
-        } else if (computerScore===max) {
-          if(userScore[i][j]>max) {
-            max = userScore[i][j]
-            u = i;
-            v = j;
-          }
-        }
-        console.log('x:', i, 'y:', j, 'point:', computerScore[i][j] > userScore[i][j] ? computerScore[i][j] : userScore[i][j]);
+      if(simulateBoard[i][j]===0) {
+        depth++;
       }
     }
   }
+
+  let point = minMax(simulateBoard, depth, isCircle);
+
   oneStep(u, v, isCircle);
   calWinPoints(u, v);
+}
+
+const minMax = function(node, depth, player) {
+  console.table('目前盤面', node);
+  console.log('目前深度:', depth, 'player:', player);
+
+  calWinPoints(i,j)
+
+  if( depth === 0 ) {
+
+    return winPoint // 盤面評估分數( 1: 電腦贏  0: 和局  -1: 人類贏 )
+  }
+  if( player === true ) { // 電腦 find Max
+    let bestValue = -2;
+    for(let i=0;i<3;i++) {
+      for(let j=0;j<3;j++) {
+        if(node[i][j]===0) {
+          node[i][j] = 2
+          value = minMax( node, depth-1,  false);  // 往下搜尋
+          bestValue = max( value, bestValue );  // 找最大值
+        }
+      }
+    }
+    return bestValue;
+  }
+  else if( player === false ){ // 人類 find min
+    let bestValue = 2;
+    for(let i=0;i<3;i++) {
+      for(let j=0;j<3;j++) {
+        if(node[i][j]===0) {
+          node[i][j] = 1
+          value = minMax( node, depth-1, true )  // 往下搜尋
+          bestValue = min( value, bestValue )  // 找最小值
+        }
+      }
+    }
+    return bestValue;
+  }
 }
 
 const calWinPoints = function(i, j) {
