@@ -100,17 +100,20 @@ canvas.onclick = function(e) {
     // 判斷落子點是否沒下過
     board[i][j] = PLAYER_TOKEN;
     drawOneStep(i, j, PLAYER_TOKEN);
-    console.table(board);
     gameState = checkGameOver(board);
     if(gameState === 1) {
       document.getElementById("result").innerHTML = "O win!";
     }
     // 玩家回合結束
-    if(gameState !== 1) {
+    if(gameState !== 1 && gameState !== 3) {
       // 電腦落子
+
+      let t0 = performance.now();
       let move = moveAI();
-      console.table(board);
-      console.log(move);
+      let t1 = performance.now();
+      console.log('%c AI choose:'+ '('+ move.i+','+move.j+')', 'color: red');
+      console.log('%c AI took ' + (t1 - t0) + ' ms.', 'color: yellow')
+
       board[move.i][move.j] = COMPUTER_TOKEN;
       drawOneStep(move.i, move.j, COMPUTER_TOKEN);
       gameState = checkGameOver(board);
@@ -118,6 +121,9 @@ canvas.onclick = function(e) {
         document.getElementById("result").innerHTML = "X win!";
       }
       // 電腦回合結束
+    }
+    if(gameState === 3) {
+      document.getElementById("result").innerHTML = "Tie game";
     }
   }
 }
@@ -252,6 +258,9 @@ function minmax(newBoard, depth, player) {
       }, {cost: -Infinity, cell: {i: 0, j: 0}});
       // console.log(max);
       if(depth === 0) {
+        values.forEach(function(v) {
+          console.log('('+v.cell.i+','+v.cell.j+') :'+v.cost);
+        })
         return max.cell;
       } else {
         return max.cost;
