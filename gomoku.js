@@ -83,10 +83,10 @@ canvas.onclick = function(e) {
     // 判斷落子點是否沒下過
     board[i][j] = PLAYER_TOKEN;
     drawOneStep(i, j, PLAYER_TOKEN);
-    // gameState = checkGameOver(board);
-    // if(gameState === 1) {
-    //   document.getElementById("result").innerHTML = "O win!";
-    // }
+    gameState = checkGameOver(board);
+    if(gameState === 1) {
+      document.getElementById("result").innerHTML = "黑棋 勝!";
+    }
     // 玩家回合結束
     // if(gameState !== 1 && gameState !== 3) {
     //   // 電腦落子
@@ -101,7 +101,7 @@ canvas.onclick = function(e) {
     //   drawOneStep(move.i, move.j, COMPUTER_TOKEN);
     //   gameState = checkGameOver(board);
     //   if(gameState === 2) {
-    //     document.getElementById("result").innerHTML = "X win!";
+    //     document.getElementById("result").innerHTML = "白棋 勝!";
     //   }
     //   // 電腦回合結束
     // }
@@ -293,16 +293,16 @@ function checkGameOver(newBoard) {
   }
 
   for(let k=0;k<count;k++) {
-    for(let i=0;i<3;i++) {
-      for(let j=0;j<3;j++) {
+    for(let i=0;i<15;i++) {
+      for(let j=0;j<15;j++) {
         if(newBoard[i][j] === PLAYER_TOKEN && wins[i][j][k]) {
           circleWinPoints[k]++;
-          if(circleWinPoints[k]===3) {
+          if(circleWinPoints[k]===5) {
             return 1;
           }
         } else if(newBoard[i][j] === COMPUTER_TOKEN && wins[i][j][k]) {
           crossWinPoints[k]++;
-          if(crossWinPoints[k]===3) {
+          if(crossWinPoints[k]===5) {
             return 2;
           }
         }
@@ -310,8 +310,8 @@ function checkGameOver(newBoard) {
     }
   }
 
-  for(let i=0;i<3;i++) {
-    for(let j=0;j<3;j++) {
+  for(let i=0;i<15;i++) {
+    for(let j=0;j<15;j++) {
       if(newBoard[i][j] === '') {
         return 0;
       }
