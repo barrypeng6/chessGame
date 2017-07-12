@@ -3,7 +3,7 @@ canvas {
   margin: 50px auto;
 }
 
-#chess-1 {
+#canvas {
   background-color: tan;
   padding: 15px;
   box-shadow: 10px 10px 5px #888888;
