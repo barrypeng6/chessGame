@@ -88,33 +88,33 @@ canvas.onclick = function(e) {
       document.getElementById("result").innerHTML = "黑棋 勝!";
     }
     // 玩家回合結束
-    // if(gameState !== 1 && gameState !== 3) {
-    //   // 電腦落子
-    //
-    //   let t0 = performance.now();
-    //   let move = moveAI();
-    //   let t1 = performance.now();
-    //   console.log('%c AI choose:'+ '('+ move.i+','+move.j+')', 'color: red');
-    //   console.log('%c AI took ' + (t1 - t0) + ' ms.', 'color: yellow')
-    //
-    //   board[move.i][move.j] = COMPUTER_TOKEN;
-    //   drawOneStep(move.i, move.j, COMPUTER_TOKEN);
-    //   gameState = checkGameOver(board);
-    //   if(gameState === 2) {
-    //     document.getElementById("result").innerHTML = "白棋 勝!";
-    //   }
-    //   // 電腦回合結束
-    // }
-    // if(gameState === 3) {
-    //   document.getElementById("result").innerHTML = "Tie game";
-    // }
+    if(gameState !== 1 && gameState !== 3) {
+      // 電腦落子
+
+      let t0 = performance.now();
+      let move = moveAI();
+      let t1 = performance.now();
+      console.log('%c AI choose:'+ '('+ move.i+','+move.j+')', 'color: red');
+      console.log('%c AI took ' + (t1 - t0) + ' ms.', 'color: yellow')
+
+      board[move.i][move.j] = COMPUTER_TOKEN;
+      drawOneStep(move.i, move.j, COMPUTER_TOKEN);
+      gameState = checkGameOver(board);
+      if(gameState === 2) {
+        document.getElementById("result").innerHTML = "白棋 勝!";
+      }
+      // 電腦回合結束
+    }
+    if(gameState === 3) {
+      document.getElementById("result").innerHTML = "Tie game";
+    }
   }
 }
 
 function moveAI() {
 
   // 單純使用盤面評估函數
-  // return stupidAI(board);
+  return stupidAI(board);
   // minmax
   // return minmax(board, 0, COMPUTER_TOKEN);
 
@@ -135,8 +135,8 @@ function stupidAI(newBoard) {
   }
 
   for(let k=0;k<count;k++) {
-    for(let i=0;i<3;i++) {
-      for(let j=0;j<3;j++) {
+    for(let i=0;i<15;i++) {
+      for(let j=0;j<15;j++) {
         if(newBoard[i][j] === PLAYER_TOKEN && wins[i][j][k]) {
           circleWinPoints[k]++;
         } else if(newBoard[i][j] === COMPUTER_TOKEN && wins[i][j][k]) {
@@ -147,18 +147,18 @@ function stupidAI(newBoard) {
   }
 
   // 初始
-  for(let i=0;i<3;i++) {
+  for(let i=0;i<15;i++) {
     computerScore[i]=[];
     userScore[i]=[];
-    for(let j=0;j<3;j++) {
+    for(let j=0;j<15;j++) {
       computerScore[i][j]=0;
       userScore[i][j]=0;
     }
   }
 
-  for(let i=0;i<3;i++){
-    for(let j=0;j<3;j++) {
-      if(newBoard[i][j]==='') {
+  for(let i=0;i<15;i++){
+    for(let j=0;j<15;j++) {
+      if(newBoard[i][j] === '') {
         for(let k=0;k<count;k++) {
           if(wins[i][j][k]) {
             // 防守
@@ -166,12 +166,24 @@ function stupidAI(newBoard) {
               userScore[i][j] += 200;
             } else if(circleWinPoints[k]===2) {
               userScore[i][j] += 1000;
+            } else if(circleWinPoints[k]===3) {
+              userScore[i][j] += 2000;
+            } else if(circleWinPoints[k]===4) {
+              userScore[i][j] += 3000;
+            } else if(circleWinPoints[k]===5) {
+              userScore[i][j] += 10000;
             }
             // 進攻
             if(crossWinPoints[k]===1) {
               computerScore[i][j] += 220;
             } else if(crossWinPoints[k]===2) {
-              computerScore[i][j] += 5000;
+              computerScore[i][j] += 1200;
+            } else if(crossWinPoints[k]===3) {
+              computerScore[i][j] += 2200;
+            } else if(crossWinPoints[k]===4) {
+              computerScore[i][j] += 3200;
+            } else if(crossWinPoints[k]===5) {
+              computerScore[i][j] += 20000;
             }
           }
         }
